@@ -1,0 +1,16 @@
+{
+  "name": "passport-scope",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "电池护照按用途披露时的字段资料领取",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test --test-concurrency=1",
+    "demo": "node scripts/demo.mjs",
+    "start": "node scripts/start.mjs"
+  }
+}

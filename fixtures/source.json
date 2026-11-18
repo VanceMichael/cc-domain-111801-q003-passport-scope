@@ -1,0 +1,57 @@
+{
+  "scope": "public",
+  "resources": {
+    "/passports/public": {
+      "body": {
+        "purpose": "public",
+        "passports": [
+          {
+            "id": "BP100",
+            "href": "/passports/public/records/BP100"
+          }
+        ]
+      }
+    },
+    "/passports/public/records/BP100": {
+      "body": {
+        "passport": "BP100",
+        "purpose": "public",
+        "manufacturer": "合成制造厂",
+        "model": "CELL-A",
+        "capacityWh": "120",
+        "public": true
+      }
+    },
+    "/passports/public/relations/BP100": {
+      "body": {
+        "disclosures": [
+          {
+            "field": "chemistry",
+            "purpose": "dismantle",
+            "proof": "P1"
+          }
+        ],
+        "proofs": [
+          {
+            "id": "P1",
+            "mode": "verify-only"
+          }
+        ]
+      }
+    }
+  },
+  "portal": {
+    "identity": "passport",
+    "records": {
+      "BP100": {
+        "passport": "BP100",
+        "purpose": "public",
+        "manufacturer": "合成制造厂",
+        "model": "CELL-A",
+        "capacityWh": "120",
+        "public": true
+      }
+    },
+    "version": 1
+  }
+}
