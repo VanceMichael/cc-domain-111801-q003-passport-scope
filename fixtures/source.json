@@ -7,7 +7,9 @@
         "passports": [
           {
             "id": "BP100",
-            "href": "/passports/public/records/BP100"
+            "href": "/passports/public/records/BP100",
+            "relations": "/passports/public/relations/BP100",
+            "purposes": ["repair", "dismantle"]
           }
         ]
       }
@@ -24,17 +26,66 @@
     },
     "/passports/public/relations/BP100": {
       "body": {
+        "passport": "BP100",
         "disclosures": [
+          {
+            "field": "chemistry",
+            "purpose": "repair",
+            "proof": "P1"
+          },
+          {
+            "field": "capacityWh",
+            "purpose": "repair",
+            "proof": "P2"
+          },
+          {
+            "field": "parts",
+            "purpose": "repair",
+            "proof": "P2",
+            "derivedFrom": ["chemistry"]
+          },
           {
             "field": "chemistry",
             "purpose": "dismantle",
             "proof": "P1"
+          },
+          {
+            "field": "serial",
+            "purpose": "dismantle",
+            "proof": "P3"
+          },
+          {
+            "field": "serial",
+            "purpose": "repair",
+            "proof": "P3",
+            "approved": false
           }
         ],
         "proofs": [
           {
             "id": "P1",
-            "mode": "verify-only"
+            "mode": "verify-only",
+            "conclusion": {
+              "verified": true,
+              "chemistry": "LFP"
+            }
+          },
+          {
+            "id": "P2",
+            "mode": "content",
+            "dependsOn": ["P4"]
+          },
+          {
+            "id": "P3",
+            "mode": "content"
+          },
+          {
+            "id": "P4",
+            "mode": "verify-only",
+            "conclusion": {
+              "verified": true,
+              "basis": "registry"
+            }
           }
         ]
       }

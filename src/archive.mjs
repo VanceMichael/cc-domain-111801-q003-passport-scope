@@ -13,7 +13,14 @@ export class Archive {
       digest TEXT PRIMARY KEY, location TEXT NOT NULL, observed_at TEXT NOT NULL, size INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS receipts (
       scope TEXT NOT NULL, business_key TEXT NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL,
-      decision TEXT NOT NULL, PRIMARY KEY(scope,business_key,digest));`);
+      decision TEXT NOT NULL, PRIMARY KEY(scope,business_key,digest));
+      CREATE TABLE IF NOT EXISTS deliveries (
+      purpose TEXT NOT NULL, business_key TEXT NOT NULL, digest TEXT NOT NULL, record TEXT NOT NULL,
+      PRIMARY KEY(purpose,business_key));
+      CREATE TABLE IF NOT EXISTS packages (
+      purpose TEXT NOT NULL, business_key TEXT NOT NULL, digest TEXT NOT NULL, relation_digest TEXT NOT NULL,
+      record TEXT NOT NULL, decision TEXT NOT NULL,
+      PRIMARY KEY(purpose,business_key,digest,relation_digest));`);
     return this;
   }
   async preserve(document) {
@@ -31,8 +38,38 @@ export class Archive {
     if (!this.database.prepare('SELECT digest FROM evidence WHERE digest=?').get(digest)) throw new Error('原文尚未保存');
     this.database.prepare('INSERT OR IGNORE INTO receipts VALUES(?,?,?,?,?)').run(scope, key, digest, JSON.stringify(record), JSON.stringify(decision));
   }
+  /**
+   * 字段级收据同时绑定原文与关联声明两份内容摘要。声明变化会形成新的历史收据，
+   * 而不是覆盖上一次“当时如何取得结果”的证据。
+   */
+  putPackage(purpose, key, digest, relationDigest, record, decision) {
+    for (const item of [digest, relationDigest]) {
+      if (!this.database.prepare('SELECT digest FROM evidence WHERE digest=?').get(item)) throw new Error('原文尚未保存');
+    }
+    this.database.prepare('INSERT OR IGNORE INTO packages VALUES(?,?,?,?,?,?)').run(purpose, key, digest, relationDigest, JSON.stringify(record), JSON.stringify(decision));
+  }
+  packages(purpose) {
+    return this.database.prepare('SELECT * FROM packages WHERE purpose=? ORDER BY business_key,digest,relation_digest').all(purpose).map(row => ({ ...row, record: JSON.parse(row.record), decision: JSON.parse(row.decision) }));
+  }
   records(scope) {
     return this.database.prepare('SELECT * FROM receipts WHERE scope=? ORDER BY business_key,digest').all(scope).map(row => ({ ...row, record: JSON.parse(row.record), decision: JSON.parse(row.decision) }));
+  }
+  /**
+   * 当前交付按用途单独保存：授权或用途收缩时只替换该用途的当前包，
+   * 其他用途的合法交付不受影响，历史收据仍留在 receipts / packages 中作为证据。
+   */
+  deliver(purpose, key, digest, record) {
+    this.database.prepare('INSERT INTO deliveries VALUES(?,?,?,?) ON CONFLICT(purpose,business_key) DO UPDATE SET digest=excluded.digest, record=excluded.record').run(purpose, key, digest, JSON.stringify(record));
+  }
+  currentDelivery(purpose, key) {
+    const row = this.database.prepare('SELECT * FROM deliveries WHERE purpose=? AND business_key=?').get(purpose, key);
+    return row ? { ...row, record: JSON.parse(row.record) } : undefined;
+  }
+  deliveries(purpose) {
+    return this.database.prepare('SELECT * FROM deliveries WHERE purpose=? ORDER BY business_key').all(purpose).map(row => ({ ...row, record: JSON.parse(row.record) }));
+  }
+  retract(purpose, key) {
+    this.database.prepare('DELETE FROM deliveries WHERE purpose=? AND business_key=?').run(purpose, key);
   }
   async original(digest) {
     if (!/^[a-f0-9]{64}$/.test(digest)) throw new Error('原文摘要无效');
