@@ -7,7 +7,8 @@
         "passports": [
           {
             "id": "BP100",
-            "href": "/passports/public/records/BP100"
+            "href": "/passports/public/records/BP100",
+            "relations": "/passports/public/relations/BP100"
           }
         ]
       }
@@ -24,19 +25,114 @@
     },
     "/passports/public/relations/BP100": {
       "body": {
+        "passport": "BP100",
         "disclosures": [
           {
             "field": "chemistry",
             "purpose": "dismantle",
-            "proof": "P1"
+            "mode": "verify-only",
+            "proof": "P1",
+            "visible": true
+          },
+          {
+            "field": "capacityWh",
+            "purpose": "repair",
+            "mode": "deliver",
+            "proof": "P2",
+            "visible": true
+          },
+          {
+            "field": "capacityWh",
+            "purpose": "dismantle",
+            "mode": "deliver",
+            "proof": "P2",
+            "visible": true
+          },
+          {
+            "field": "partsList",
+            "purpose": "dismantle",
+            "mode": "deliver",
+            "proof": "P3",
+            "visible": true,
+            "derivesFrom": ["chemistry"]
+          },
+          {
+            "field": "supplierTrace",
+            "purpose": "repair",
+            "mode": "deliver",
+            "proof": "P4",
+            "visible": false
+          }
+        ],
+        "requests": [
+          {
+            "field": "chemistry",
+            "purpose": "repair",
+            "status": "pending"
           }
         ],
         "proofs": [
           {
             "id": "P1",
-            "mode": "verify-only"
+            "mode": "verify-only",
+            "href": "/passports/public/evidence/BP100/P1",
+            "digest": "8662804713ab2ab62465897765fe711e026efabc576ae0895fac79c3f3e508b4"
+          },
+          {
+            "id": "P2",
+            "mode": "deliver",
+            "href": "/passports/public/evidence/BP100/P2",
+            "digest": "0d868a64c254d4c4242be01d785a7a6dd6a635d448141829db2534c4414503cd"
+          },
+          {
+            "id": "P3",
+            "mode": "deliver",
+            "href": "/passports/public/evidence/BP100/P3",
+            "digest": "0f5568244169bf1168f8b486f69868543db74e8737a974c553bb009bd656f14c"
+          },
+          {
+            "id": "P4",
+            "mode": "deliver",
+            "href": "/passports/public/evidence/BP100/P4"
           }
         ]
+      }
+    },
+    "/passports/public/evidence/BP100/P1": {
+      "body": {
+        "passport": "BP100",
+        "field": "chemistry",
+        "value": "LFP",
+        "proof": "P1",
+        "internalNote": "来源内部账号可见的全量备注，verify-only 不得交付"
+      }
+    },
+    "/passports/public/evidence/BP100/P2": {
+      "body": {
+        "passport": "BP100",
+        "field": "capacityWh",
+        "value": "120",
+        "proof": "P2"
+      }
+    },
+    "/passports/public/evidence/BP100/P3": {
+      "body": {
+        "passport": "BP100",
+        "field": "partsList",
+        "value": [
+          "电芯组（化学体系 LFP）",
+          "金属外壳"
+        ],
+        "proof": "P3",
+        "internalNote": "来源内部账号可见的全量备注"
+      }
+    },
+    "/passports/public/evidence/BP100/P4": {
+      "body": {
+        "passport": "BP100",
+        "field": "supplierTrace",
+        "value": "供应商批次溯源（当前未向任何用途开放）",
+        "proof": "P4"
       }
     }
   },

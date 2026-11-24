@@ -1,6 +1,6 @@
 # PassportScope
 
-PassportScope 为业务资料员提供用途许可领取与原文保管，已支持来源目录预览、直接记录领取、公开摘要边界、额定容量校验、护照与型号绑定以及按业务范围形成收件记录。原文与领域收件结论分开保存，便于复查来源内容。
+PassportScope 为业务资料员提供用途许可领取与原文保管，已支持来源目录预览、直接记录领取、公开摘要边界、额定容量校验、护照与型号绑定以及按业务范围形成收件记录。回收协作方接入后，进一步支持按已获批用途（如维修、拆解）接收字段级资料：字段内容、仅核验结论与缺失授权依据分区呈现，verify-only 证明不交付原文，许可收缩后当前包与派生字段同步撤出而历史证据保留。原文与领域收件结论分开保存，便于复查来源内容。
 
 ## 环境与运行
 
@@ -26,4 +26,4 @@ docker run --rm --network none passport-scope:local
 
 ## 代码与来源约定
 
-`src/source.mjs` 负责来源目录与原文身份，`src/interpret.mjs` 解释当前领域记录，`src/receiving.mjs` 决定选定范围内的收件结果。`src/archive.mjs` 提供原文保管及收据落库，`src/app.mjs` 连接日常业务，`fixtures/` 与 `src/fixture-source.mjs` 提供可独立复查的本地合作源。详细字段与来源声明见 `docs/source-contract.md`。
+`src/source.mjs` 负责来源目录、原文与披露关系身份，`src/interpret.mjs` 解释当前领域记录，`src/disclosures.mjs` 解释字段披露并给出字段级处置结论，`src/receiving.mjs` 决定公开摘要范围内的收件结果，`src/app.mjs` 连接日常业务与按用途领取，`src/archive.mjs` 提供原文保管、公开收据与只追加的字段级收据。`fixtures/` 与 `src/fixture-source.mjs` 提供可独立复查的本地合作源。详细字段、用途许可与来源声明见 `docs/source-contract.md`。
